@@ -158,15 +158,15 @@ flutter-springboot-starter/
 
 ### Authentication Routes
 - **Register**: `POST /api/v1/auth/register`
-  - Body: `{ email, password, ... }`
+  - Body: `{ email, password }`
   
 - **Login**: `POST /api/v1/auth/login`
   - Body: `{ email, password }`
-  - Response: `{ accessToken, refreshToken }`
+  - Response: `{ email, accessToken }`
 
-- **Refresh Token**: `POST /api/v1/auth/refresh`
-  - Body: `{ refreshToken }`
-  - Response: `{ accessToken, refreshToken }`
+- **Refresh Token**: `GET /api/v1/auth/refresh`
+  - Header cookie: `{ refresh_token }`
+  - Response: `{ email, accessToken }`
 
 ### Protected Endpoints
 All authenticated endpoints require:

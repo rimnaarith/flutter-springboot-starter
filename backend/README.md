@@ -104,7 +104,7 @@ com.naarith.fsp
 
 - **Register**: `POST /api/v1/auth/register` with JSON body containing `email`, `password`, etc.
 - **Login**: `POST /api/v1/auth/login` with credentials; returns access and refresh tokens.
-- **Refresh**: `POST /api/v1/auth/refresh` with a valid refresh token to obtain new access token.
+- **Refresh**: `GET /api/v1/auth/refresh` with a valid refresh token to obtain new access token.
 
 All authenticated endpoints require an `Authorization: Bearer <token>` header.
 
