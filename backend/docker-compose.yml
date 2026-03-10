@@ -1,0 +1,24 @@
+services:
+  postgres:
+    container_name: postgres_sql
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: fsp_starter
+    volumes:
+      - fsp:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - fsp
+    restart: unless-stopped
+
+networks:
+  fsp:
+    name: fsp-network
+    driver: bridge
+
+volumes:
+  fsp:
+    name: fsp-volumes

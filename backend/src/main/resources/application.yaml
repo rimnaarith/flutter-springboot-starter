@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: fsp_starter
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fsp_starter
+    username: user
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+server:
+  port: 8222
+
+# Custom properties
+application:
+  security:
+    secret: 379fab244599ccbb5a42a6138bf28b147d60992f2b2fa99e3c05bbe090bd6535
