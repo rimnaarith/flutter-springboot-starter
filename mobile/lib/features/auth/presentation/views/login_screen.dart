@@ -115,6 +115,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ref.read(loginViewModelProvider.notifier).login(_emailController.text.trim(), _passwordController.text.trim());
                           }
                         },
+                        isLoading: state.status == .loading,
                         text: 'Log in',
                       ),
                       const SizedBox(height: 18),

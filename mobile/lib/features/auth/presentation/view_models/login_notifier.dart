@@ -38,8 +38,13 @@ class LoginViewModel extends Notifier<LoginState> {
 
   Future<void> login(String email, String password) async {
     state = state.copyWith(status: LoginStatus.loading);
-    await _repo.login(email, password);
-    state = state.copyWith(status: LoginStatus.success);
+    try {
+      await _repo.login(email, password);
+      state = state.copyWith(status: LoginStatus.success);
+    } catch (e) {
+      log.e('[LoginVM] Login failed with error: $e');
+      state = state.copyWith(status: LoginStatus.failure);
+    }
   }
 
   void togglePassword() {

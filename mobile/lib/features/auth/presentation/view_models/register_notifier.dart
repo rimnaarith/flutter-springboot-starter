@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fsp_starter/core/logging/app_logger.dart';
 import 'package:fsp_starter/features/auth/auth_provider.dart';
 import 'package:fsp_starter/features/auth/data/repository/auth_repository.dart';
 
@@ -45,8 +46,13 @@ class RegisterViewModel extends Notifier<RegisterState> {
 
   Future<void> register(String email, String password) async {
     state = state.copyWith(status: .loading);
-    await _repo.register(email, password);
-    state = state.copyWith(status: .success);
+    try {
+      await _repo.register(email, password);
+      state = state.copyWith(status: .success);
+    } catch (e) {
+      log.e('[RegisterVM] Registration failed with error: $e');
+      state = state.copyWith(status: .failure);
+    }
   }
 
   void togglePassword() {

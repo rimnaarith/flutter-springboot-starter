@@ -140,6 +140,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                           }
                         },
                         text: 'Sign up',
+                        isLoading: state.status == .loading,
                       ),
                       const SizedBox(height: 18),
                       Text.rich(
