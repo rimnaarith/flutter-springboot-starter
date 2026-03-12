@@ -8,6 +8,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class JwtService {
     private final SecretKey secretKey;
@@ -52,11 +54,13 @@ public class JwtService {
 
     // Generate access token
     public String generateAccessToken(UserPrincipal userPrincipal) {
+        log.info("Generate a access token for email={}", userPrincipal.getUsername());
         return generateToken(userPrincipal, TokenType.ACCESS, 600); // 10min
     }
 
     // Generate refresh token
     public String generateRefreshToken(UserPrincipal userPrincipal) {
+        log.info("Generate a refresh token for email={}", userPrincipal.getUsername());
         return generateToken(userPrincipal, TokenType.REFRESH, 3600); // 60min
     }
 

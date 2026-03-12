@@ -9,8 +9,10 @@ import com.naarith.fsp.auth.mapper.AuthMapper;
 import com.naarith.fsp.auth.security.CustomUserDetailsService;
 import com.naarith.fsp.auth.security.UserPrincipal;
 import com.naarith.fsp.auth.service.model.LoginResult;
+import com.naarith.fsp.user.exception.EmailAlreadyExistsException;
 import com.naarith.fsp.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -37,7 +40,13 @@ public class AuthService {
         newUser.setPassword(passwordEncoder.encode(request.password()));
 
         // Create user
-        userService.createUserForRegistration(newUser);
+        try {
+            userService.createUserForRegistration(newUser);
+            log.info("Registered successfully email={}", request.email());
+        } catch (EmailAlreadyExistsException e) {
+            log.warn("Register failed: email {} already exists", request.email());
+            throw e;
+        }
     }
 
     // Login user
@@ -47,12 +56,15 @@ public class AuthService {
         try {
             var auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
             userPrincipal = (UserPrincipal) auth.getPrincipal();
+            log.info("Successful authentication for email={}", request.email());
         } catch (BadCredentialsException | UsernameNotFoundException e) {
+            log.warn("Login failed for email={}: Invalid credentials", request.email());
             // Invalid email/password or User not found
             throw new InvalidCredentialsExceptions();
         }
 
         if (userPrincipal == null) {
+            log.error("Authenticated principal null error for email={}", request.email());
             throw new IllegalStateException("Authenticated principal is null");
         }
 
@@ -82,6 +94,7 @@ public class AuthService {
         try {
             user = (UserPrincipal) userDetailsService.loadUserByUsername(userPrincipal.getUsername());
         } catch (UsernameNotFoundException e) {
+            log.warn("Refresh token invalid email={}", userPrincipal.getUsername());
             throw new TokenInvalidException();
         }
 
@@ -89,6 +102,7 @@ public class AuthService {
         var newAccessToken = jwtService.generateAccessToken(user);
         var newRefreshToken = jwtService.generateRefreshToken(user);
 
+        log.info("Successful refresh token for email={}", user.getUsername());
         return LoginResult.builder()
                 .loginResponse(LoginResponse
                         .builder()

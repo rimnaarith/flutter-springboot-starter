@@ -12,11 +12,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
 @Tag(name = "Authentication")
@@ -35,6 +37,7 @@ public class AuthController {
     })
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody @Valid RegisterRequest request) {
+        log.info("Register attempt for email={}", request.email());
         service.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -48,7 +51,7 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginRequest request) {
-
+        log.info("Login attempt for email={}", request.email());
         var loginResult = service.login(request);
 
         // Set refresh token cookie
@@ -72,6 +75,7 @@ public class AuthController {
     })
     @GetMapping("/refresh")
     public ResponseEntity<LoginResponse> refresh(HttpServletRequest request) {
+        log.info("Received refresh token request");
         var cookies = request.getCookies();
         String refreshToken = null;
         if (cookies != null) {
@@ -83,6 +87,7 @@ public class AuthController {
             }
         }
         if (refreshToken == null) {
+            log.warn("No refresh token found in cookie");
             throw new TokenInvalidException();
         }
 
